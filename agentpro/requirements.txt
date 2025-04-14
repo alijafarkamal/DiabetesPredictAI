@@ -1,0 +1,16 @@
+openai
+youtube_transcript_api
+duckduckgo-search
+requests
+python-pptx
+pydantic
+python-dotenv
+pandas
+numpy
+matplotlib
+seaborn
+openpyxl
+pyarrow
+matplotlib
+scikit-learn
+seaborn

@@ -1,0 +1,7 @@
+# API Keys - Replace with your actual keys
+OPENAI_API_KEY=sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TRAVERSAAL_ARES_API_KEY=ares-xxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+# Optional configurations
+# MODEL=gpt-4
+# MAX_TOKENS=2000

@@ -1,32 +1,40 @@
+import sys
+import os
+from dotenv import load_dotenv
+
+# Load environment variables before any imports that depend on them
+load_dotenv()
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), 'agentpro')))
 import streamlit as st
 import numpy as np
 import pandas as pd
 import joblib
+from agentpro.agentpro import AgentPro, AresInternetTool, YouTubeSearchTool
+from diabetes_tool import DiabetesPredictionTool
 
-# Load diabetes prediction objects
+
+# Initialize tools and agent
 try:
-    impute_means = joblib.load('impute_means.pkl')
-    scaler = joblib.load('scaler.pkl')
-    loaded_model = joblib.load('model.pkl')
-    feature_names = joblib.load('feature_names.pkl')
-except FileNotFoundError as e:
-    st.error(f"Error: Missing file {str(e)}. Please run diabetes_prediction.py to generate model files.")
+    diabetes_tool = DiabetesPredictionTool()
+    internet_tool = AresInternetTool()
+    youtube_tool = YouTubeSearchTool()
+
+    agent = AgentPro(
+        tools=[diabetes_tool, internet_tool, youtube_tool],
+        model="nvidia/llama-3.1-nemotron-70b-instruct",  # Free model from OpenRouter
+        temperature=0.7,
+        max_tokens=1024,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
+        api_base="https://openrouter.ai/api/v1",  # OpenRouter API base
+        api_key=os.getenv("OPENROUTER_API_KEY"),
+    )
+except Exception as e:
+    st.error(f"Failed to initialize agent: {str(e)}")
     st.stop()
 
-# Define columns to impute
-columns_to_impute = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
-
-def diabetes_prediction(input_data):
-    input_data = list(input_data)
-    for i, col in enumerate(feature_names):
-        if col in columns_to_impute and input_data[i] == 0:
-            input_data[i] = impute_means[col]
-    input_df = pd.DataFrame([input_data], columns=feature_names)
-    std_data = scaler.transform(input_df)
-    prediction = loaded_model.predict(std_data)
-    return 'The person is not diabetic' if prediction[0] == 0 else 'The person is diabetic'
-
-# Custom CSS for healthcare-friendly styling
+# Custom CSS for styling
 st.markdown("""
     <style>
     .main-header {
@@ -83,54 +91,59 @@ st.markdown("""
 
 def main():
     # Header
-    st.markdown('<div class="main-header">Diabetes Prediction AI Agent</div>', unsafe_allow_html=True)
-    st.markdown('<div class="info-box">Welcome! I’m an AI agent that predicts diabetes risk based on medical data. Enter your details below to get started.</div>', unsafe_allow_html=True)
+    st.markdown('<div class="main-header">Diabetes AI Agent</div>', unsafe_allow_html=True)
+    st.markdown('<div class="info-box">Welcome! I’m an AI agent that can predict your diabetes risk, answer questions, and provide educational resources about diabetes. Ask me anything!</div>', unsafe_allow_html=True)
 
     # Sidebar with additional information
     st.sidebar.title("About")
     st.sidebar.write("""
-    This AI agent uses a Support Vector Machine (SVM) model trained on the PIMA Indians Diabetes Dataset to predict diabetes risk.
+    This AI agent uses a team of specialized agents to assist with diabetes-related queries:
+    - Prediction Agent: Predicts diabetes risk using an SVM model trained on the PIMA Indians Diabetes Dataset.
+    - Information Agent: Answers general questions about diabetes using internet search.
+    - Educational Agent: Provides educational videos on diabetes management.
     
-    The model was trained with the following steps:
-    1. Data preprocessing and standardization.
-    2. Train-test splitting.
-    3. Model training with a linear kernel SVM.
-    4. Evaluation using accuracy scores.
-    
-    For more information, visit the [GitHub repository](https://github.com/zohaib-7035/Diabetes-Prediction-Using-SVM-in-Python).
+    For more information, visit the [GitHub repository](https://github.com/alijafarkamal/DiabetesPredictAI).
     """)
 
-    # Input fields with descriptions and tooltips
-    st.markdown('<div class="sub-header">Enter Your Medical Data</div>', unsafe_allow_html=True)
-    st.write("Please provide the following information. Zeros in certain fields will be imputed with average values.")
-
+    # Input fields for medical data
+    st.markdown('<div class="sub-header">Enter Your Medical Data (optional for predictions)</div>', unsafe_allow_html=True)
+    st.write("Provide your details below. Zeros in certain fields will be imputed with average values.")
     col1, col2 = st.columns(2)
     with col1:
         pregnancies = st.number_input('Pregnancies', min_value=0, max_value=20, value=0, help="Number of times pregnant (0-20)")
         glucose = st.number_input('Glucose (mg/dL)', min_value=0, max_value=300, value=0, help="Blood sugar level (typical range: 70-140 mg/dL)")
         blood_pressure = st.number_input('Blood Pressure (mm Hg)', min_value=0, max_value=150, value=0, help="Diastolic blood pressure (typical range: 60-90 mm Hg)")
         skin_thickness = st.number_input('Skin Thickness (mm)', min_value=0, max_value=100, value=0, help="Triceps skin fold thickness (mm)")
-
     with col2:
         insulin = st.number_input('Insulin (mu U/ml)', min_value=0, max_value=1000, value=0, help="2-hour serum insulin (mu U/ml)")
         bmi = st.number_input('BMI', min_value=0.0, max_value=70.0, value=0.0, help="Body Mass Index (typical range: 18.5-30)")
         dpf = st.number_input('Diabetes Pedigree Function', min_value=0.0, max_value=3.0, value=0.0, help="Genetic diabetes risk score (0.0-3.0)")
         age = st.number_input('Age', min_value=0, max_value=120, value=0, help="Age in years (0-120)")
 
-    # Collect inputs
-    input_data = [pregnancies, glucose, blood_pressure, skin_thickness, insulin, bmi, dpf, age]
+    if st.button('Set My Data'):
+        st.session_state['medical_data'] = [pregnancies, glucose, blood_pressure, skin_thickness, insulin, bmi, dpf, age]
+        st.success("Your data has been set! You can now ask for a prediction.")
 
-    # Predict button with loading spinner
-    if st.button('Predict'):
-        if any(val < 0 for val in input_data):
-            st.error("Please enter non-negative values for all fields.")
+    # Chat interface
+    st.markdown('<div class="sub-header">Ask Me Anything About Diabetes</div>', unsafe_allow_html=True)
+    user_query = st.text_input("Your query:", placeholder="E.g., 'Predict my diabetes risk' or 'What are diabetes symptoms?'")
+
+    if user_query:
+        if 'medical_data' in st.session_state:
+            query_with_data = f"{user_query} Use this data: {st.session_state['medical_data']}"
         else:
-            with st.spinner('Predicting...'):
-                diagnosis = diabetes_prediction(input_data)
-                if 'not diabetic' in diagnosis.lower():
-                    st.markdown(f'<div class="prediction-success">{diagnosis}</div>', unsafe_allow_html=True)
+            query_with_data = user_query
+        with st.spinner('Thinking...'):
+            try:
+                response = agent.run(query_with_data)
+                if 'not diabetic' in response.lower():
+                    st.markdown(f'<div class="prediction-success">{response}</div>', unsafe_allow_html=True)
+                elif 'diabetic' in response.lower():
+                    st.markdown(f'<div class="prediction-error">{response}</div>', unsafe_allow_html=True)
                 else:
-                    st.markdown(f'<div class="prediction-error">{diagnosis}</div>', unsafe_allow_html=True)
+                    st.write(response)
+            except Exception as e:
+                st.error(f"Error processing your query: {str(e)}")
 
     # Feature explanations expander
     with st.expander("Learn More About the Features"):

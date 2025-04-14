@@ -3,3 +3,7 @@ numpy
 pandas
 joblib
 scikit-learn
+youtube_transcript_api
+duckduckgo-search
+requests
+python-dotenv
