@@ -21,10 +21,11 @@ Make **early diabetes risk prediction** and **preventive education** accessible 
 ---
 
 ## Our Team:
-- [Ali Jafar](https://github.com/alijafarkamal)
-- [Zohaib Shahid](https://github.com/zohaib-7035)
-- [Noor Fatima](https://github.com/Noor-Fatima-Afzal)
-- [Haris Mughal](https://github.com/Haris-Mughal)
+
+| [Ali Jafar](https://github.com/alijafarkamal) | [Zohaib Shahid](https://github.com/zohaib-7035) | [Noor Fatima](https://github.com/Noor-Fatima-Afzal) | [Haris Mughal](https://github.com/Haris-Mughal) |
+|:--:|:--:|:--:|:--:|
+| <img src="https://github.com/alijafarkamal.png" width="100"/> | <img src="https://github.com/zohaib-7035.png" width="100"/> | <img src="https://github.com/Noor-Fatima-Afzal.png" width="100"/> | <img src="https://github.com/Haris-Mughal.png" width="100"/> |
+
 
 ---
 
