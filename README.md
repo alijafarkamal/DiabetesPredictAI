@@ -5,7 +5,7 @@ DiabetesPredictAI is a proof-of-concept **agentic AI system** designed to assess
 
 ---
 
-## Our Team:
+## 👥 Our Team
 
 | <img src="https://github.com/alijafarkamal.png" width="100"/> | <img src="https://github.com/zohaib-7035.png" width="100"/> | <img src="https://github.com/Noor-Fatima-Afzal.png" width="100"/> | <img src="https://github.com/Haris-Mughal.png" width="100"/> |
 |:--:|:--:|:--:|:--:|
