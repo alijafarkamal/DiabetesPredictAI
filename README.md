@@ -1,7 +1,7 @@
 # DiabetesPredictAI – Agentic AI for Risk Assessment & Education  
 **Traversaal x Optimized AI Hackathon**
 
-DiabetesPredictAI is a proof-of-concept **agentic AI system** designed to assess diabetes risk, provide precautionary recommendations, and retrieve relevant educational content. Built with **Streamlit** and powered by **AgentPro** – [Traversaal’s open-source, production-ready agent framework](https://github.com/alijafarkamal/Traversaal-x-Optimized-AI-Hackathon) – this project showcases the potential of modular AI agents in healthcare applications.
+DiabetesPredictAI is a proof-of-concept **agentic AI system** designed to assess diabetes risk, provide precautionary recommendations, and retrieve relevant educational content. Built with **Streamlit** and powered by **AgentPro** – [Traversaal’s open-source, production-ready agent framework](https://github.com/traversaal-ai/AgentPro) – this project showcases the potential of modular AI agents in healthcare applications.
 
 ---
 
@@ -51,7 +51,6 @@ Make **early diabetes risk prediction** and **preventive education** accessible 
    ```env
    OPENROUTER_API_KEY=your_openrouter_api_key
    TRAVERSAAL_ARES_API_KEY=your_traversaal_ares_api_key
-   MODEL_NAME=gpt-4
    ```
 
 5. **Ensure Data Files Exist in the Root Directory**
